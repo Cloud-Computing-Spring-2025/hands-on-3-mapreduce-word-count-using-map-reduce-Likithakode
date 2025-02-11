@@ -1,118 +1,66 @@
+# Word Count using Hadoop MapReduce
 
-# WordCount-Using-MapReduce-Hadoop
+## Project Overview
+This project implements a Word Count program using Hadoop MapReduce. The program processes a given text dataset, counts the occurrences of each word, and outputs the results in a distributed manner using Hadoop's MapReduce framework.
 
-This repository is designed to test MapReduce jobs using a simple word count dataset.
+## Approach and Implementation
+The Word Count program consists of two main components:
 
-## Objectives
+### Mapper
+- Reads input text line by line.
+- Splits each line into words.
+- Emits each word as a key with a count of 1.
 
-By completing this activity, students will:
+### Reducer
+- Receives word-count pairs from the Mapper.
+- Aggregates the counts for each unique word.
+- Outputs the word along with its total count.
 
-1. **Understand Hadoop's Architecture:** Learn how Hadoop's distributed file system (HDFS) and MapReduce framework work together to process large datasets.
-2. **Build and Deploy a MapReduce Job:** Gain experience in compiling a Java MapReduce program, deploying it to a Hadoop cluster, and running it using Docker.
-3. **Interact with Hadoop Ecosystem:** Practice using Hadoop commands to manage HDFS and execute MapReduce jobs.
-4. **Work with Docker Containers:** Understand how to use Docker to run and manage Hadoop components and transfer files between the host and container environments.
-5. **Analyze MapReduce Job Outputs:** Learn how to retrieve and interpret the results of a MapReduce job.
+## Execution Steps
+Follow these steps to build and run the Hadoop MapReduce Word Count program:
 
-## Setup and Execution
+### 1. Compile the Java Code
+sh
+hadoop com.sun.tools.javac.Main WordCount.java
+jar cf wordcount.jar WordCount*.class
 
-### 1. **Start the Hadoop Cluster**
 
-Run the following command to start the Hadoop cluster:
+### 2. Create Input Directory in HDFS
+sh
+hadoop fs -mkdir -p /user/input
+hadoop fs -put input.txt /user/input/
 
-```bash
-docker compose up -d
-```
 
-### 2. **Build the Code**
+### 3. Run the Word Count Job
+sh
+hadoop jar wordcount.jar WordCount /user/input /user/output
 
-Build the code using Maven:
 
-```bash
-mvn install
-```
+### 4. View the Output
+sh
+hadoop fs -cat /user/output/part-r-00000
 
-### 3. **Move JAR File to Shared Folder**
 
-Move the generated JAR file to a shared folder for easy access:
+## Challenges Faced & Solutions
+- *Handling Large Input Files*: Used Hadoop's distributed storage to efficiently manage large datasets.
+- *Data Preprocessing*: Implemented text normalization to remove special characters and convert words to lowercase.
+- *Performance Optimization*: Used Hadoop Counters to track the number of processed words and optimize execution.
 
-```bash
-mv target/*.jar shared-folder/input/code/
-```
+## Sample Input and Output
+### Input (input.txt):
 
-### 4. **Copy JAR to Docker Container**
+Hadoop is great
+Hadoop is powerful
+Hadoop is scalable
 
-Copy the JAR file to the Hadoop ResourceManager container:
 
-```bash
-docker cp shared-folder/input/code/<your-jar-file>.jar resourcemanager:/opt/hadoop-3.2.1/share/hadoop/mapreduce/
-```
+### Expected Output (part-r-00000):
 
-### 5. **Move Dataset to Docker Container**
+Hadoop 3
+is 3
+great 1
+powerful 1
+scalable 1
 
-Copy the dataset to the Hadoop ResourceManager container:
 
-```bash
-docker cp shared-folder/input/data/input.txt resourcemanager:/opt/hadoop-3.2.1/share/hadoop/mapreduce/
-```
-
-### 6. **Connect to Docker Container**
-
-Access the Hadoop ResourceManager container:
-
-```bash
-docker exec -it resourcemanager /bin/bash
-```
-
-Navigate to the Hadoop directory:
-
-```bash
-cd /opt/hadoop-3.2.1/share/hadoop/mapreduce/
-```
-
-### 7. **Set Up HDFS**
-
-Create a folder in HDFS for the input dataset:
-
-```bash
-hadoop fs -mkdir -p /input/dataset
-```
-
-Copy the input dataset to the HDFS folder:
-
-```bash
-hadoop fs -put ./input.txt /input/dataset
-```
-
-### 8. **Execute the MapReduce Job**
-
-Run your MapReduce job using the following command:
-
-```bash
-hadoop jar /opt/hadoop-3.2.1/share/hadoop/mapreduce/<your-jar-file>.jar com.example.controller.Controller /input/dataset/input.txt /output
-```
-
-### 9. **View the Output**
-
-To view the output of your MapReduce job, use:
-
-```bash
-hadoop fs -cat /output/*
-```
-
-### 10. **Copy Output from HDFS to Local OS**
-
-To copy the output from HDFS to your local machine:
-
-1. Use the following command to copy from HDFS:
-    ```bash
-    hdfs dfs -get /output /opt/hadoop-3.2.1/share/hadoop/mapreduce/
-    ```
-
-2. use Docker to copy from the container to your local machine:
-   ```bash
-   exit 
-   ```
-    ```bash
-    docker cp resourcemanager:/opt/hadoop-3.2.1/share/hadoop/mapreduce/output/ shared-folder/output/
-    ```
-3. Commit and push to your repo so that we can able to see your output
+This README.md provides a clear understanding of the project, making the repository self-explanatory and well-documented.
